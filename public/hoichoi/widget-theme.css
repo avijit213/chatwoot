@@ -1,0 +1,82 @@
+/*
+ * hoichoi theme for the Chatwoot widget.
+ *
+ * Loaded by app/views/widgets/show.html.erb when WIDGET_THEME_URL is set, so
+ * restyling needs neither a Chatwoot rebuild nor a redeploy — republish this
+ * file and reload.
+ *
+ * Scope note: this themes Chatwoot's own screens. It cannot add screens that
+ * do not exist there — the Figma's Home/Messages/Help tab bar, the hero, the
+ * FAQ accordion and the catalog rails are not restyleable, they are absent.
+ * Those live in hoichoi's own panel (@hoichoi/support).
+ *
+ * Selector policy: prefer Chatwoot's hand-written semantic classes
+ * (.chat-bubble, .user-message, .agent-message, .message-content) over its
+ * Tailwind utilities, which churn between releases.
+ */
+
+:root,
+.woot-widget-wrap {
+  --widget-color: #d20820;
+
+  --hoi-surface: #151515;
+  --hoi-card: #2c2e30;
+  --hoi-bubble-agent: rgba(42, 42, 42, 0.5);
+  --hoi-bubble-user: rgba(42, 42, 42, 0.7);
+  --hoi-text: #ffffff;
+  --hoi-muted: #a9a9a9;
+  --hoi-placeholder: #c9c4cf;
+  --hoi-radius: 8px;
+  --hoi-font: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --hoi-font-body: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+}
+
+body,
+#app {
+  background: var(--hoi-surface) !important;
+  color: var(--hoi-text);
+  font-family: var(--hoi-font-body);
+}
+
+/* Message bubbles — the Figma uses one grey for each side, no brand fill. */
+.chat-bubble.agent {
+  background: var(--hoi-bubble-agent) !important;
+  color: var(--hoi-text) !important;
+  border-radius: var(--hoi-radius) !important;
+}
+
+.chat-bubble.user {
+  background: var(--hoi-bubble-user) !important;
+  color: var(--hoi-text) !important;
+  border-radius: var(--hoi-radius) !important;
+}
+
+.chat-bubble .message-content {
+  font-family: var(--hoi-font-body);
+  font-size: 14px;
+  line-height: 19.6px;
+}
+
+/* Sender line under an agent bubble. */
+.agent-message-wrap .time,
+.user-message-wrap .time {
+  color: #6c6f74 !important;
+  font-family: var(--hoi-font-body);
+  font-size: 12px;
+}
+
+/* Composer. */
+.user-message-input,
+.user-message-input::placeholder {
+  font-family: var(--hoi-font-body);
+  font-size: 16px;
+}
+
+.user-message-input::placeholder {
+  color: var(--hoi-placeholder) !important;
+}
+
+/* Headings use Outfit, as the panel does. */
+h1, h2, h3, .text-lg, .text-xl {
+  font-family: var(--hoi-font);
+}

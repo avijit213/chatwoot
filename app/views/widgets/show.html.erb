@@ -35,6 +35,13 @@
     </script>
     <%= vite_client_tag %>
     <%= vite_javascript_tag 'widget' %>
+    <%# hoichoi: theme the widget from a stylesheet we host, so restyling never
+        needs a Chatwoot rebuild or redeploy. Loaded last so it wins over the
+        widget's own CSS. Absent WIDGET_THEME_URL this renders nothing and the
+        page is byte-identical to upstream. %>
+    <% if ENV['WIDGET_THEME_URL'].present? %>
+      <link rel="stylesheet" href="<%= ENV['WIDGET_THEME_URL'] %>" />
+    <% end %>
   </head>
   <body>
     <div id="app" class="h-full"></div>
