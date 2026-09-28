@@ -54,4 +54,9 @@ class Captain::AssistantPolicy < ApplicationPolicy
   def playground?
     true
   end
+
+  # hoichoi: the voice worker's user must be an administrator; it posts customer messages.
+  def voice_turn?
+    @account_user.administrator?
+  end
 end

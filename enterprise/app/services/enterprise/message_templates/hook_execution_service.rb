@@ -50,7 +50,12 @@ module Enterprise::MessageTemplates::HookExecutionService
   end
 
   def should_process_captain_response?
-    conversation.pending? && message.incoming? && inbox.captain_assistant.present?
+    conversation.pending? && message.incoming? && inbox.captain_assistant.present? && !voice_turn_message?
+  end
+
+  # hoichoi: Captain::Voice::TurnService answers these inline; scheduling here would reply twice.
+  def voice_turn_message?
+    message.content_attributes&.dig('source') == Captain::Voice::TurnService::SOURCE
   end
 
   def perform_handoff

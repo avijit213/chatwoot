@@ -1,7 +1,7 @@
 class Api::V1::Accounts::Captain::AssistantsController < Api::V1::Accounts::BaseController
   before_action -> { check_authorization(Captain::Assistant) }
 
-  before_action :set_assistant, only: [:show, :update, :destroy, :playground, :metrics, :faq_stats, :summary, :drilldown]
+  before_action :set_assistant, only: [:show, :update, :destroy, :playground, :voice_turn, :metrics, :faq_stats, :summary, :drilldown]
 
   def index
     @assistants = account_assistants.ordered
@@ -35,6 +35,15 @@ class Api::V1::Accounts::Captain::AssistantsController < Api::V1::Accounts::Base
                end
 
     render json: response
+  end
+
+  # hoichoi: synchronous turn for the phone voice worker. See Captain::Voice::TurnService.
+  def voice_turn
+    conversation = Current.account.conversations.find_by!(display_id: params.require(:conversation_id))
+    render json: Captain::Voice::TurnService.new(assistant: @assistant, conversation: conversation,
+                                                 text: params.require(:text)).perform
+  rescue Captain::Voice::TurnService::NotPending
+    render json: { error: 'conversation is not pending' }, status: :conflict
   end
 
   def tools

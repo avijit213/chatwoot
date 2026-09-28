@@ -66,6 +66,7 @@ Rails.application.routes.draw do
             resources :assistants do
               member do
                 post :playground
+                post :voice_turn
                 get :metrics
                 get :faq_stats
                 get :summary
@@ -270,6 +271,8 @@ Rails.application.routes.draw do
                 post :initiate
               end
             end
+            # hoichoi: calls placed by the LiveKit voice worker
+            resources :voice_calls, only: [:create, :update]
           end
 
           resources :custom_attribute_definitions, only: [:index, :show, :create, :update, :destroy]

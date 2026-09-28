@@ -68,8 +68,13 @@ class Voice::InboundCallBuilder
       contact_inbox_id: contact_inbox.id,
       inbox_id: inbox.id,
       contact_id: contact.id,
-      status: :open
+      status: ai_first? ? :pending : :open
     )
+  end
+
+  # hoichoi: a LiveKit call on a Captain inbox is answered by Topshe first; humans are rung only on bot_handoff!.
+  def ai_first?
+    provider == :livekit && inbox.captain_assistant.present?
   end
 
   def create_call!(contact, conversation)
@@ -80,7 +85,9 @@ class Voice::InboundCallBuilder
       contact: contact,
       provider: provider,
       direction: :incoming,
-      status: 'ringing',
+      # hoichoi: the voice worker has already answered, so no agent "Accept" popup
+      status: ai_first? ? 'in_progress' : 'ringing',
+      started_at: (Time.zone.now if ai_first?),
       provider_call_id: call_sid,
       meta: { 'initiated_at' => Time.zone.now.to_i }.merge(extra_meta.stringify_keys)
     )

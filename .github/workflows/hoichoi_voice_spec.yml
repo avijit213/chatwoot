@@ -1,0 +1,65 @@
+# hoichoi: runs the voice-fork specs WITH enterprise code (upstream CI strips enterprise/).
+name: hoichoi voice specs
+permissions:
+  contents: read
+on:
+  push:
+    branches:
+      - hoichoi/**
+  workflow_dispatch:
+
+jobs:
+  voice-specs:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ''
+          POSTGRES_DB: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - run: pnpm i
+      - run: bundle exec rake db:create db:schema:load
+      - name: Rubocop (changed files)
+        run: >-
+          bundle exec rubocop
+          enterprise/app/services/captain/voice enterprise/app/services/voice/livekit
+          enterprise/app/controllers/api/v1/accounts/voice_calls_controller.rb
+          enterprise/app/controllers/api/v1/accounts/captain/assistants_controller.rb
+          enterprise/app/services/enterprise/message_templates/hook_execution_service.rb
+          enterprise/app/services/voice/inbound_call_builder.rb
+          enterprise/app/policies/captain/assistant_policy.rb enterprise/app/models/call.rb
+          spec/enterprise/services/captain/voice spec/enterprise/controllers/api/v1/accounts/voice_calls_controller_spec.rb
+          spec/enterprise/controllers/api/v1/accounts/captain/voice_turn_spec.rb
+      - name: Voice specs + the upstream specs they touch
+        run: >-
+          bundle exec rspec
+          spec/enterprise/services/captain/voice
+          spec/enterprise/controllers/api/v1/accounts/voice_calls_controller_spec.rb
+          spec/enterprise/controllers/api/v1/accounts/captain/voice_turn_spec.rb
+          spec/enterprise/controllers/api/v1/accounts/captain/assistants_controller_spec.rb
+          spec/enterprise/services/enterprise/message_templates/hook_execution_service_spec.rb
+          spec/enterprise/services/voice/inbound_call_builder_spec.rb
+          spec/enterprise/controllers/api/v1/accounts/calls_controller_spec.rb

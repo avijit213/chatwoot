@@ -33,13 +33,15 @@ class Call < ApplicationRecord
   TERMINAL_STATUSES = %w[completed no_answer failed rejected].freeze
 
   store_accessor :meta, :conference_sid, :twilio_conference_sid, :recording_sid, :parent_call_sid, :initiated_at, :ended_at
+  # hoichoi: LiveKit calls (voice worker)
+  store_accessor :meta, :room_name, :recording_key
 
   # Frontend voice bubbles/stores expect inbound/outbound string values
   DISPLAY_DIRECTION = { 'incoming' => 'inbound', 'outgoing' => 'outbound' }.freeze
 
   DEFAULT_STUN_URL = 'stun:stun.l.google.com:19302'.freeze
 
-  enum :provider, { twilio: 0, whatsapp: 1 }
+  enum :provider, { twilio: 0, whatsapp: 1, livekit: 2 }
   enum :direction, { incoming: 0, outgoing: 1 }
 
   belongs_to :account
