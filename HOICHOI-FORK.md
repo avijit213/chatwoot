@@ -26,7 +26,7 @@ Every change is small and marked with a `hoichoi:` comment.
 | `enterprise/app/controllers/api/v1/accounts/captain/assistants_controller.rb` | `voice_turn` action (+ `set_assistant`); 409 if the conversation isn't pending |
 | `enterprise/app/policies/captain/assistant_policy.rb` | `voice_turn?`: administrators only |
 | `enterprise/app/services/enterprise/message_templates/hook_execution_service.rb` | skip the Captain schedule for `voice_turn` messages, so Topshe doesn't reply twice |
-| `enterprise/app/models/call.rb` | `provider` enum gains `livekit: 2`; `meta` gains `room_name`, `recording_key` |
+| `enterprise/app/models/call.rb` | `provider` enum gains `livekit: 2`; `meta` gains `room_name`, `recording_key`; `from_number`/`to_number` use `try(:phone_number)` because API-inbox channels have no phone number |
 | `enterprise/app/services/voice/inbound_call_builder.rb` | LiveKit call on a Captain inbox → conversation `pending` (Topshe first) and call `in_progress` (no agent "Accept" popup) |
 | `enterprise/app/controllers/api/v1/accounts/voice_calls_controller.rb` | **new.** `POST` registers a call; `PATCH` reports status, transcript, recording key, outcome |
 | `enterprise/app/services/voice/livekit/call_update_service.rb` | **new.** Applies the PATCH through `Voice::CallStatus::Manager` and refreshes the bubble; adds labels `voice` / `ai-handoff` / `overnight` / `dnc` |

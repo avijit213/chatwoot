@@ -107,12 +107,13 @@ class Call < ApplicationRecord
     status.to_s.tr('_', '-')
   end
 
+  # hoichoi: `try` because LiveKit calls live on API inboxes, whose channel has no phone_number
   def from_number
-    incoming? ? contact.phone_number : inbox.channel&.phone_number
+    incoming? ? contact.phone_number : inbox.channel.try(:phone_number)
   end
 
   def to_number
-    incoming? ? inbox.channel&.phone_number : contact.phone_number
+    incoming? ? inbox.channel.try(:phone_number) : contact.phone_number
   end
 
   def recording_url
