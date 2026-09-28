@@ -70,8 +70,8 @@ RSpec.describe 'Voice calls API (LiveKit)', type: :request do
     it 'does not touch calls from other providers' do
       twilio_call = create(:call, account: account, provider: :twilio)
 
-      patch "/api/v1/accounts/#{account.id}/voice_calls/#{twilio_call.id}", params: { status: 'completed' },
-                                                                              headers: admin.create_new_auth_token, as: :json
+      patch "/api/v1/accounts/#{account.id}/voice_calls/#{twilio_call.id}",
+            params: { status: 'completed' }, headers: admin.create_new_auth_token, as: :json
 
       expect(response).to have_http_status(:not_found)
     end
